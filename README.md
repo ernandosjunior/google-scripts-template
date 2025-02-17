@@ -1,8 +1,5 @@
-Segue abaixo um exemplo de README para o projeto:
+markdown
 
----
-
-```markdown
 # Google Apps Script Template com Clasp, TypeScript e Jest
 
 Este projeto é um template para desenvolver scripts do Google Apps (Google Apps Script) localmente utilizando:
@@ -17,6 +14,7 @@ O template também inclui um script para exportar dados de uma planilha do Googl
 ---
 
 ## Estrutura do Projeto
+
 ```
 
 my-google-app/
@@ -36,7 +34,7 @@ my-google-app/
 ├── package.json # Configurações do npm e scripts de build/deploy
 └── tsconfig.json # Configurações do TypeScript
 
-````
+```
 
 ---
 
@@ -46,6 +44,8 @@ my-google-app/
 - **Clasp** instalado globalmente:
   ```bash
   npm install -g @google/clasp
+  ```
+
 ````
 
 - Conta Google com permissões para acessar Google Apps Script e Google Sheets.
@@ -89,14 +89,14 @@ my-google-app/
 
 ### Build e Testes
 
-- **Build:**  
+- **Build:**
   Compila os arquivos TypeScript para JavaScript (os arquivos compilados são gerados na pasta `dist/`, que é ignorada no deploy).
 
   ```bash
   npm run build
   ```
 
-- **Testes:**  
+- **Testes:**
   Executa os testes unitários utilizando o Jest.
   ```bash
   npm test
@@ -167,3 +167,4 @@ Para dúvidas ou sugestões, entre em contato através do [seu-email@exemplo.com
 
 Este README oferece uma visão geral do projeto, incluindo instruções para instalação, desenvolvimento, testes, deploy e exportação de dados. Ajuste as informações de contato e licença conforme necessário para o seu projeto.
 ```
+````
