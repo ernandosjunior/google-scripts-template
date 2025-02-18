@@ -1,2 +1,5 @@
+# .gitignore
 node_modules
-*-lock.json
+dist
+src/config.ts
+.clasp.json

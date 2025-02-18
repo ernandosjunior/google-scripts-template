@@ -1,14 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "module": "commonjs",
-    "lib": ["ES2017"],
-    "outDir": "dist",
-    "rootDir": "src",
+    "target": "ES2015",
+    "module": "ESNext", // Importante para Rollup
+    "moduleResolution": "Node",
+    "lib": ["ES2015", "DOM"],
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
+    "sourceMap": false,
+    "noEmitOnError": true,
+    "outDir": "dist",
+    "rootDir": "src"
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "test", "scripts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/__tests__",
+    "**/*.test.ts",
+    "rollup.config.js"
+  ]
 }

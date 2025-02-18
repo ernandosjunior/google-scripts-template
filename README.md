@@ -1,170 +1,219 @@
-markdown
+# Google Apps Script Template (TypeScript + Rollup + Jest)
 
-# Google Apps Script Template com Clasp, TypeScript e Jest
+Este repositório é um template para projetos do **Google Apps Script**, utilizando **TypeScript**, **Rollup**, **CLASP** e **Jest**. Ele inclui:
 
-Este projeto é um template para desenvolver scripts do Google Apps (Google Apps Script) localmente utilizando:
-
-- **Clasp**: Ferramenta de linha de comando para desenvolver e publicar Google Apps Scripts.
-- **TypeScript**: Linguagem para desenvolvimento com tipagem estática.
-- **Jest**: Framework para testes unitários.
-- **PowerShell**: Scripts para criação de template e exportação de dados de planilhas.
-
-O template também inclui um script para exportar dados de uma planilha do Google Sheets para um arquivo JSON, que pode ser utilizado para mocks nos testes.
+- Estrutura de arquivos organizada.
+- Suporte a import/export via Rollup.
+- Testes unitários com mocks de `SpreadsheetApp` (Jest).
+- Exemplo de soma de valores em um intervalo (A1:D5) em uma planilha Google.
+- Manuseio de informações sensíveis em arquivo não-versionado.
 
 ---
 
-## Estrutura do Projeto
+## Sumário
 
-```
-
-my-google-app/
-├── src/
-│ ├── Code.ts # Código principal do Apps Script
-│ └── spreadsheet.ts # Funções de manipulação da planilha
-├── test/
-│ └── spreadsheet.test.ts # Testes unitários com Jest
-├── mocks/
-│ └── spreadsheet.mock.json # Mock dos dados da planilha em JSON
-├── scripts/
-│ ├── create-template.ps1 # Script PowerShell para gerar um novo template
-│ └── export-data.js # Script Node para exportar dados da planilha para JSON
-├── .claspignore # Arquivo para ignorar arquivos/pastas no deploy com Clasp
-├── .env.example # Exemplo de arquivo de variáveis de ambiente
-├── jest.config.js # Configuração do Jest
-├── package.json # Configurações do npm e scripts de build/deploy
-└── tsconfig.json # Configurações do TypeScript
-
-```
+1. [Pré-requisitos](#pré-requisitos)
+2. [Estrutura de Pastas](#estrutura-de-pastas)
+3. [Instalação e Configuração Inicial](#instalação-e-configuração-inicial)
+4. [Scripts Disponíveis](#scripts-disponíveis)
+5. [Como Usar](#como-usar)
+   1. [Build](#build)
+   2. [Testes](#testes)
+   3. [Deploy](#deploy)
+   4. [Exemplo de Execução](#exemplo-de-execução)
+6. [Armazenando Informações Sensíveis](#armazenando-informações-sensíveis)
+7. [Observações sobre Rollup e Jest](#observações-sobre-rollup-e-jest)
+8. [Contribuições](#contribuições)
+9. [Licença](#licença)
 
 ---
 
 ## Pré-requisitos
 
-- **Node.js** e **npm** instalados.
-- **Clasp** instalado globalmente:
-  ```bash
-  npm install -g @google/clasp
-  ```
+- [Node.js](https://nodejs.org/) (versão LTS ou superior)
+- [NPM](https://www.npmjs.com/) ou [Yarn](https://yarnpkg.com/)
+- [CLASP](https://github.com/google/clasp) instalado globalmente
 
-````
-
-- Conta Google com permissões para acessar Google Apps Script e Google Sheets.
-- **PowerShell** para executar os scripts `.ps1` (no Windows ou em ambientes compatíveis).
-- Configuração de autenticação para as APIs do Google (p.ex.: Application Default Credentials).
+```bash
+npm install -g @google/clasp
+```
 
 ---
 
-## Instalação
+## Estrutura de Pastas
 
-1. **Gerar o template (opcional):**
+```bash
+my-gas-project
+├── .clasp.json
+├── .gitignore
+├── package.json
+├── rollup.config.js
+├── tsconfig.json
+├── jest.config.js
+├── src
+│   ├── main.ts
+│   ├── spreadsheetService.ts
+│   ├── config.example.ts
+│   ├── config.ts         # Arquivo para dados sensíveis (NÃO versionar)
+│   └── __tests__
+│       ├── main.test.ts
+│       └── mocks
+│           └── spreadsheetMock.ts
+└── README.md
+```
 
-   Utilize o script PowerShell para criar a estrutura do projeto:
+### Descrição dos Principais Arquivos
 
-   ```powershell
-   .\scripts\create-template.ps1 -ProjectName "my-google-app"
-   ```
+- **`.clasp.json`**: Configurações do CLASP, gerado ao criar o projeto.
+- **`.gitignore`**: Arquivos/pastas ignorados pelo Git (inclui `config.ts` e `node_modules`).
+- **`rollup.config.js`**: Configurações do bundler Rollup.
+- **`tsconfig.json`**: Configurações do compilador TypeScript (modo **ESNext** para compatibilidade com Rollup).
+- **`jest.config.js`**: Configurações do Jest (usa `ts-jest`).
+- **`package.json`**: Scripts e dependências.
+- **`src/main.ts`**: Arquivo principal com funções expostas ao Apps Script.
+- **`src/spreadsheetService.ts`**: Lógica de planilha (ex.: soma de intervalos).
+- **`src/__tests__`**: Testes unitários (com mocks para classes do Apps Script).
 
-   _Obs.: Esse script criará uma nova pasta com toda a estrutura do template._
+---
 
-2. **Instale as dependências:**
+## Instalação e Configuração Inicial
 
-   Navegue até a pasta do projeto e execute:
+1. **Clonar este repositório ou baixar o template**:
 
    ```bash
-   cd my-google-app
+   git clone https://github.com/seu-usuario/google-scripts-template.git
+   cd google-scripts-template
+   ```
+
+2. **Instalar dependências**:
+
+   ```bash
    npm install
    ```
 
-3. **Configuração de Variáveis de Ambiente:**
+3. **Login no CLASP** (se ainda não tiver feito):
 
-   Crie um arquivo `.env` a partir do arquivo `.env.example` e configure a variável `GOOGLE_SCRIPT_ID`:
-
-   ```env
-   GOOGLE_SCRIPT_ID=seu_script_id_aqui
+   ```bash
+   clasp login
    ```
+
+4. **Criar um projeto no Google Apps Script** (se ainda não existir):
+
+   ```bash
+   clasp create --type standalone --rootDir dist
+   ```
+
+   Isto irá gerar o arquivo `.clasp.json` com o `scriptId` do seu novo projeto.
+
+> **Observação**: Se quiser vincular o script diretamente a uma planilha, troque `--type standalone` para `--type sheet`.
 
 ---
 
-## Desenvolvimento
+## Scripts Disponíveis
 
-### Build e Testes
+No arquivo `package.json`, há uma seção de scripts que você pode executar:
 
-- **Build:**
-  Compila os arquivos TypeScript para JavaScript (os arquivos compilados são gerados na pasta `dist/`, que é ignorada no deploy).
+- **`npm run build`**  
+  Compila os arquivos TypeScript usando Rollup e gera o output em `dist/main.js`.
+- **`npm run test`**  
+  Executa testes unitários com Jest.
+- **`npm run push`**  
+  Compila o projeto e faz o deploy do código para o Google Apps Script (via `clasp push`).
+- **`npm run deploy`**  
+  Executa o `push` e, em seguida, o `clasp deploy`, criando uma nova versão do script no Apps Script.
 
-  ```bash
-  npm run build
-  ```
+---
 
-- **Testes:**
-  Executa os testes unitários utilizando o Jest.
-  ```bash
-  npm test
-  ```
+## Como Usar
 
-### Deploy com Clasp
+### **Build**
 
-O deploy envia apenas os arquivos de origem (pasta `src/`), conforme configurado no arquivo `.claspignore`.
+Compila seu código TypeScript em um bundle para o Apps Script:
+
+```bash
+npm run build
+```
+
+A saída será gerada em `dist/main.js`. O Apps Script lerá esse arquivo ao ser enviado via `clasp push`.
+
+---
+
+### **Testes**
+
+Executa os testes unitários locais, usando _mocks_ para classes do Google Apps Script:
+
+```bash
+npm run test
+```
+
+- O Jest está configurado para ignorar o código fora de `src/`, exceto `__tests__`.
+- Você pode ver a cobertura de testes (coverage) ou realizar debug em modo watch se preferir.
+
+---
+
+### **Deploy**
+
+Envia o código para o Google Apps Script (pode criar nova versão ou apenas atualizar a existente).
+
+```bash
+npm run push
+```
+
+Caso queira criar uma versão e implantar automaticamente, use:
 
 ```bash
 npm run deploy
 ```
 
----
-
-## Exportação de Dados do Google Sheets para JSON
-
-Este projeto inclui um script para exportar os dados de uma planilha do Google Sheets para um arquivo JSON, que pode ser usado como mock nos testes.
-
-### Utilizando o Script Node
-
-Execute o script `export-data.js` via Node.js:
-
-```bash
-node scripts/export-data.js --id "SEU_SPREADSHEET_ID" --sheets "Sheet1,Sheet2" --rows 50 --output "mocks/spreadsheet.mock.json"
-```
-
-- **--id**: ID da planilha.
-- **--sheets**: Lista de abas separadas por vírgula. Se omitido, exporta todas as abas.
-- **--rows**: Número máximo de linhas a serem exportadas (limita o range para `A1:Z{rows}`). Se omitido, exporta todas as linhas.
-- **--output**: Caminho do arquivo JSON de saída.
-
-### Utilizando o Script PowerShell
-
-Alternativamente, use o script PowerShell `export-data.ps1`:
-
-```powershell
-.\scripts\export-data.ps1 -SpreadsheetId "SEU_SPREADSHEET_ID" -Sheets "Sheet1,Sheet2" -Rows 50 -Output "mocks/spreadsheet.mock.json"
-```
+Isso depende das configurações em seu arquivo `.clasp.json`.
 
 ---
 
-## Testes Locais
+### **Exemplo de Execução**
 
-Os testes unitários (localizados em `test/spreadsheet.test.ts`) utilizam mocks para simular as funções do Google Apps Script (como `SpreadsheetApp`), permitindo a execução dos testes localmente sem acesso à API real.
+Após o deploy (ou push), abra seu [script no Google Apps Script](https://script.google.com/) e execute a função de teste:
+
+```ts
+function testSumValues() {
+  const result = sumValuesInRange('A1:D5');
+  Logger.log(`Resultado da soma: ${result}`);
+}
+```
+
+Abra o **Registro** (Logs) para ver o resultado da soma.
+
+---
+
+## Armazenando Informações Sensíveis
+
+1. No arquivo `config.example.ts`, há um exemplo de como manter dados sensíveis (chaves de API, tokens etc.).
+2. Crie um `config.ts` real, **não versionado** (adicione ao `.gitignore`), e inclua nele suas credenciais:
+   ```ts
+   export const SENSITIVE_DATA = {
+     API_KEY: "sua_chave_aqui",
+     ...
+   };
+   ```
+3. Importe esse arquivo somente onde for necessário; dessa forma, suas credenciais não ficarão públicas no repositório.
+
+---
+
+## Observações sobre Rollup e Jest
+
+- O **Rollup** precisa que o `tsconfig.json` use `module: "ESNext"` (ou `"ES2015"`, `"ES2020"`, `"ES2022"`) para conseguir bundlar corretamente.
+- O **Jest** precisa que **TypeScript** use `module: "CommonJS"` **ou** que utilizemos um arquivo de configuração separado (`tsconfig.jest.json`) com `module = "CommonJS"`. Isso já está configurado via **`ts-jest`** em `jest.config.js` (ver `transform` e `tsconfig`).
 
 ---
 
 ## Contribuições
 
-Contribuições são bem-vindas! Se você deseja contribuir, por favor, abra issues ou envie pull requests com sugestões e melhorias.
+1. **Fork** este repositório.
+2. Crie um **branch** para sua feature ou correção de bug.
+3. Faça **commit** das suas alterações com mensagens claras.
+4. Crie um **Pull Request** detalhando suas mudanças.
 
 ---
 
 ## Licença
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
-
----
-
-## Contato
-
-Para dúvidas ou sugestões, entre em contato através do [seu-email@exemplo.com](mailto:seu-email@exemplo.com).
-
-```
-
----
-
-Este README oferece uma visão geral do projeto, incluindo instruções para instalação, desenvolvimento, testes, deploy e exportação de dados. Ajuste as informações de contato e licença conforme necessário para o seu projeto.
-```
-````
+Este projeto está sob a licença [MIT](LICENSE). Sinta-se à vontade para usar, modificar e distribuir conforme desejar.
