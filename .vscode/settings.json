@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "prettier.singleQuote": true,
+  "prettier.arrowParens": "avoid",
+  "prettier.jsxSingleQuote": true,
+  "prettier.trailingComma": "none",
+  "cSpell.language": "en,pt-BR",
+  "search.exclude": {
+    "**/*.json": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/images": true
+  },
+}
