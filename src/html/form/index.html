@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exemplo de Formulário no GAS</title>
+  </head>
+  <body>
+    <h1>Exemplo de Formulário no Google Apps Script</h1>
+    <div class="container">
+      <p>
+        Este HTML pode ser usado para criar formulários dentro do
+        <strong>Google Apps Script</strong>, como por exemplo, em uma planilha
+        do Google Sheets.
+      </p>
+      <div class="info-box">
+        <p>
+          Para abrir o formulário dentro da interface do Google Sheets, utilize
+          o código abaixo:
+        </p>
+      </div>
+      <pre>
+      <code>function openForm() {
+        var html = HtmlService.createHtmlOutputFromFile('form/index')
+        .setWidth(400)
+        .setHeight(300);
+      SpreadsheetApp.getUi().showModalDialog(html, 'Formulário');
+  }
+      </code>
+    </pre>
+      <p>Esse código abrirá um modal exibindo o formulário.</p>
+    </div>
+  </body>
+</html>
